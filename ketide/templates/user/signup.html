@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  {{ template "header" . }}
+  </head>
+  <body>
+    {{ template "navbar" . }}
+    <section class="section">
+      <div class="columns is-mobile">
+        <div class="column is-three-fifths is-offset-one-fifth">
+          <div id="notification" class="notification is-danger is-hidden">
+          </div>
+          <div id="form">
+            <div class="field">
+              <label class="label">Username</label>
+              <div class="control has-icons-left">
+                <input class="input" name ="username" id="username" type="text" placeholder="Username">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-user"></i>
+                </span>
+              </div>
+              <p class="help" id="username"></p>
+            </div>
+            
+            <div class="field">
+              <label class="label">Email</label>
+              <div class="control has-icons-left">
+                <input class="input" name ="email" id="email" type="email" placeholder="Email input">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-envelope"></i>
+                </span>
+              </div>
+              <p class="help" id="email"></p>
+            </div>
+
+            <div class="field">
+              <label class="label">Password</label>
+              <div class="control has-icons-left">
+                <input id="password" class="input" name="password" type="password" placeholder="Password">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-key"></i>
+                </span>
+              </div>
+              <p class="help" id="password"></p>
+            </div>
+
+            <div class="field">
+              <label class="label">Password confirmation</label>
+              <div class="control has-icons-left">
+                <input id="password-confirmation" class="input" name="password-confirmation" type="password" placeholder="Password confirmation">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-key"></i>
+                </span>
+              </div>
+              <p class="help" id="password-confirmation"></p>
+            </div>
+            
+            <div class="field">
+              <div class="control">
+                <p>By signup to this site, I agree to the <a href="#">terms and conditions</a></p>
+              </div>
+            </div>
+            
+            <div class="field is-grouped">
+              <div class="control">
+                <button type="submit" class="button is-primary">Signup</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Begin additional javascript -->
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/signup.js"></script>
+  </body>
+</html>
