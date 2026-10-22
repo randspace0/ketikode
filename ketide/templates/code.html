@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {{ template "header" . }}
+  </head>
+  <body>
+    {{ template "navbar" . }}
+    <section class="section">
+      <div class="container">
+        <table class="table is-bordered is-fullwidth">
+          <thead>
+            <tr>
+              <th><abbr>#</abbr></th>
+              <th><abbr title="Language">Language</abbr></th>
+              <th><abbr title="Updated on">Updated on</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range $code := .codes }}
+            <tr>
+              <th><a href="/{{ $code.ID }}">{{ $code.ID }}</a></th>
+              <td>{{ $code.Language }}</td>
+              <td>{{ $code.CreatedAt }}</td>
+            </tr>
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <!-- Begin additional javascript -->
+    <script src="/static/js/main.js"></script>
+  </body>
+</html>

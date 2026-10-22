@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {{ template "header" . }}
+  </head>
+  <body>
+    {{ template "navbar"  . }}
+    <div class="columns">
+      <div class="column is-three-quarters">
+        <section class="section">
+            <a href="/raw/{{ .code.ID }}">RAW</a>
+            <div class="code container">
+              <pre style="border: 1px solid #ccc;">{{ .code.Code }}</pre>
+            </div>
+            {{ if .code.Stdin }}
+            <div class="code-input container">
+              <h2 class="is-size-3">stdin</h2>
+              <pre style="border: 1px solid #ccc;">{{ .code.Stdin }}</pre>
+            </div>
+            {{ end }}
+            {{ if .code.Stdout }}
+            <div class="code-output container">
+              <h2 class="is-size-3">stdout</h2>
+              <pre style="border: 1px solid #ccc;">{{ .code.Stdout }}</pre>
+            </div>
+            {{ end }}
+            {{ if .code.Stderr }}
+            <div class="code-output container">
+              <h2 class="is-size-3">stderr</h2>
+              <pre style="border: 1px solid #ccc;">{{ .code.Stderr }}</pre>
+            </div>
+            {{ end }}
+        </section>
+      </div>
+      <div class="column">
+        <table class="table is-fullwidth">
+          <tbody>
+            <tr>
+              <th>Owner</a></th>
+              <td>{{ .owner.Username }}</td>
+            </tr>
+            <tr>
+              <th>Language</a></th>
+              <td>{{ .code.Language }}</td>
+            </tr>
+            <tr>
+              <th>Last Update</a></th>
+              <td>{{ .code.UpdatedAt }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="action" class="is-centered">
+          {{ if .session }}
+            {{ if eq .owner.ID (index .session "id") }}
+            <a href="javascript:;" id="delete">
+              <span class="icon has-text-info">
+                <i class="fas fa-trash"></i>
+              </span>
+            </a>
+            {{ end }}
+          {{ end }}
+        </div>
+        <div class="sharethis-inline-share-buttons"></div>
+      </div>
+    </div>
+    <!-- Begin additional javascript -->
+    <script>
+      let code = {
+        id: "{{ .id }}",
+      };
+    </script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/single-code.js"></script>
+    <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=5da26ddec9a34b001206bb72&product=inline-share-buttons" async="async"></script>
+  </body>
+</html>
