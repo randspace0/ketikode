@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"os"
 
 	"github.com/labstack/echo/v4"
 
@@ -30,7 +31,7 @@ func main() {
 	// }))
 
 	// Session
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(sessionSecret()))))
 
 	e.Validator = &handler.CustomValidator{Validator: validator.New()}
 
@@ -47,4 +48,11 @@ func main() {
 	route(e)
 
 	e.Logger.Debug(e.Start(":1324"))
+}
+
+func sessionSecret() string {
+	if s := os.Getenv("SESSION_SECRET"); s != "" {
+		return s
+	}
+	return "secret"
 }
