@@ -1,32 +1,35 @@
 # Ketikode Executor
 
-## Building the Source
+HTTP service that compiles and runs untrusted code inside [isolate](https://github.com/ioi/isolate).
+
+## API
+
+`POST /api/exec` (form fields: `code`, `language`, `stdin`, `timeout` seconds, `memory` MB)
+
+Returns `phase` (`compile`|`run`), `stdout`, `stderr`, `success`, `status` (`OK`|`RE`|`SG`|`TO`), `exit_code`, `time`, `memory`.
+Compile errors return `phase: "compile"` with the compiler output in `stderr`.
+
+`GET /healthz` returns 200.
+
+Languages: `c`, `cpp`, `python3`, `ruby`, `rust`, `java` (see `languages.go`).
+
+## Configuration
+
+| Env | Default | |
+|---|---|---|
+| `ADDR` | `:8001` | listen address |
+| `ISOLATE_BIN` | `isolate` | isolate binary |
+| `ISOLATE_BOXES` | `8` | max concurrent runs |
+| `ISOLATE_CGROUPS` | unset | `1` enables `--cg` (exact memory limits, needs cgroup v2 set up for isolate) |
+
+Without cgroups, memory is limited by address space (`--mem`), and by `-Xmx` for Java.
+
+## Tests
 
 ```
-cargo build
+go test ./...
+EXECUTOR_INTEGRATION=1 go test ./...   # needs isolate and root
 ```
-
-## Adding a New Programming Language
-
-Currently, the programming language available are
-
-- C++ - `g++`
-- Java - `javac`
-- Python3 - `python`
-
-You can configure the compiler/intepreter by yourself on [Language.toml](Language.toml)
-
-## Time limit
-
-Implemented using `timeout`
-
-```
-timeout 3s ./exec
-```
-
-## Sandboxing
-
-The program execution was sandboxed using [firejail](https://github.com/netblue30/firejail/)
 
 ## License
 
