@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ketide
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ketide}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ketide"]
+      interval: 3s
+      retries: 20
+
+  executor:
+    build: ./executor
+    # isolate needs to create namespaces and mounts.
+    privileged: true
+
+  ketide:
+    build: ./ketide
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-ketide}
+      DB_NAME: ketide
+      EXECUTOR_URL: http://executor:8001
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET (see .env.example)}
+    ports:
+      - "1324:1324"
+
+volumes:
+  db:
