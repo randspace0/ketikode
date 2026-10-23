@@ -8,10 +8,10 @@ let fieldState = {
 let buttonSubmit = document.querySelector("button[type='submit']");
 
 let fieldPassword = document.querySelector(".input#password");
-let captionPassword = document.querySelector(".help#password");
+let captionPassword = document.querySelector("#password-help");
 
 let fieldPasswordOld = document.querySelector(".input#password-old");
-let captionPasswordOld = document.querySelector(".help#password-old");
+let captionPasswordOld = document.querySelector("#password-old-help");
 
 let notification = document.querySelector("#notification");
 let form = document.querySelector("#form");

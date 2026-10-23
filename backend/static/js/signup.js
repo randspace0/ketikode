@@ -12,16 +12,16 @@ let fieldState = {
 let buttonSubmit = document.querySelector("button[type='submit']");
 
 let fieldUsername = document.querySelector(".input#username");
-let captionUsername = document.querySelector(".help#username");
+let captionUsername = document.querySelector("#username-help");
 
 let fieldEmail = document.querySelector(".input#email");
-let captionEmail = document.querySelector(".help#email");
+let captionEmail = document.querySelector("#email-help");
 
 let fieldPassword = document.querySelector(".input#password");
-let captionPassword = document.querySelector(".help#password");
+let captionPassword = document.querySelector("#password-help");
 
 let fieldPasswordConfirmation = document.querySelector(".input#password-confirmation");
-let captionPasswordConfirmation = document.querySelector(".help#password-confirmation");
+let captionPasswordConfirmation = document.querySelector("#password-confirmation-help");
 
 let notification = document.querySelector("#notification");
 let form = document.querySelector("#form");
@@ -59,7 +59,7 @@ fieldUsername.addEventListener("change", () => {
 fieldEmail.addEventListener("change", () => {
     let isValidEmail = (emailRegex).test(fieldEmail.value);
     let fieldColorForValid = (valid) => (valid === isValidEmail)?"is-success":"is-danger";
-    let message = (isValidEmail)?"Username is available":"Invalid username";
+    let message = (isValidEmail)?"Looks good":"Enter a valid email address";
 
     fieldEmail.classList.remove(fieldColorForValid(false));
     fieldEmail.classList.add(fieldColorForValid(true));
