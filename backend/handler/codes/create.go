@@ -6,9 +6,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"gitlab.com/cikadev/ketide/handler"
-	executor "gitlab.com/cikadev/ketide/helpers/ketikode-executor"
-	"gitlab.com/cikadev/ketide/repository/codes"
+	"github.com/randspace0/ketikode/backend/handler"
+	executor "github.com/randspace0/ketikode/backend/helpers/ketikode-executor"
+	"github.com/randspace0/ketikode/backend/repository/codes"
 )
 
 type codeForm struct {
