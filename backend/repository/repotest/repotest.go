@@ -15,7 +15,7 @@ func Open(t *testing.T) {
 	t.Helper()
 	// A unique file-less database per test; the pool is capped at one connection
 	// because each in-memory connection would otherwise see its own empty database.
-	db, err := gorm.Open(sqlite.Open("file:"+t.Name()+"?mode=memory"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file:"+t.Name()+"?mode=memory"), &gorm.Config{TranslateError: true})
 	if err != nil {
 		t.Fatal(err)
 	}

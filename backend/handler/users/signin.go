@@ -23,45 +23,25 @@ type signinForm struct {
 
 func SigninProcessHandler(c echo.Context) error {
 	sf := new(signinForm)
-
 	if err := c.Bind(sf); err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
+		return handler.JSONError(c, http.StatusBadRequest, "Invalid request", err)
 	}
 
 	if err := c.Validate(sf); err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
+		return handler.JSONError(c, http.StatusBadRequest, "Username and password are required", nil)
 	}
 
-	u := &users.Users{
-		Username: sf.Username,
-		Password: sf.Password,
-	}
-
-	user, err := u.GetUserByUsernamePassword()
-
+	user, err := users.FindByUsername(sf.Username)
 	if err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
+		return handler.JSONError(c, http.StatusInternalServerError, "Could not sign in", err)
 	}
 
-	if user == nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": "Wrong username or password",
-			"success": false,
-		})
+	// Same answer for an unknown user and a wrong password.
+	if user == nil || !user.CheckPassword(sf.Password) {
+		return handler.JSONError(c, http.StatusUnauthorized, "Wrong username or password", nil)
 	}
 
 	handler.Signin(c, user.ID)
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "",
-		"success": true,
-	})
+
+	return handler.JSONOK(c)
 }

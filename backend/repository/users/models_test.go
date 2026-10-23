@@ -30,22 +30,32 @@ func TestFindByIDMissing(t *testing.T) {
 	}
 }
 
-func TestSigninLookupAndPasswordUpdate(t *testing.T) {
+func TestPasswordHashAndUpdate(t *testing.T) {
 	repotest.Open(t)
-	u := &users.Users{Username: "a", Email: "a@x.io", Password: "old"}
+	hash, err := users.HashPassword("old-password")
+	if err != nil || hash == "old-password" {
+		t.Fatalf("password must be hashed: %q %v", hash, err)
+	}
+	u := &users.Users{Username: "a", Email: "a@x.io", Password: hash}
 	if err := u.Create(); err != nil {
 		t.Fatal(err)
 	}
 
-	if got, _ := (&users.Users{Username: "a", Password: "wrong"}).GetUserByUsernamePassword(); got != nil {
-		t.Fatal("wrong password must not match")
+	found, err := users.FindByUsername("a")
+	if err != nil || found == nil || !found.CheckPassword("old-password") || found.CheckPassword("wrong") {
+		t.Fatalf("lookup/check failed: %+v %v", found, err)
 	}
-	if err := (&users.Users{Password: "new"}).UpdateWhereID(u.ID); err != nil {
+	if missing, err := users.FindByUsername("nobody"); missing != nil || err != nil {
+		t.Fatalf("want nil, nil: %v %v", missing, err)
+	}
+
+	newHash, _ := users.HashPassword("new-password")
+	if err := users.UpdatePassword(u.ID, newHash); err != nil {
 		t.Fatal(err)
 	}
-	got, _ := (&users.Users{Username: "a", Password: "new"}).GetUserByUsernamePassword()
-	if got == nil || got.Email != "a@x.io" {
-		t.Fatalf("update must change only the password: %+v", got)
+	found, _ = users.FindByUsername("a")
+	if !found.CheckPassword("new-password") || found.CheckPassword("old-password") || found.Email != "a@x.io" {
+		t.Fatalf("update must change only the password: %+v", found)
 	}
 }
 

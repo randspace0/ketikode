@@ -35,6 +35,9 @@ func Get(c echo.Context) error {
 		}
 
 		foundUser, err = userToFind.FindByID()
+		if err != nil || foundUser == nil {
+			foundUser = &users.Users{Username: "unknown"}
+		}
 	} else {
 		foundUser = &users.Users{
 			ID:       0,

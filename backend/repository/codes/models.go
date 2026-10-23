@@ -54,6 +54,9 @@ func List(language string, limit, offset int) ([]Codes, error) {
 	return found, q.Find(&found).Error
 }
 
+// ErrNotFound is returned by Delete when no code of that owner matches.
+var ErrNotFound = errors.New("code not found")
+
 // Delete removes the code only if it belongs to c.Owner.
 func (c *Codes) Delete() error {
 	res := repository.DB.Where("id = ? AND owner = ?", c.ID, c.Owner).Delete(&Codes{})
@@ -61,7 +64,7 @@ func (c *Codes) Delete() error {
 		return res.Error
 	}
 	if res.RowsAffected == 0 {
-		return errors.New("code not found")
+		return ErrNotFound
 	}
 	return nil
 }

@@ -11,11 +11,11 @@ Online code editor and runner. Monorepo:
 ## Run
 
 ```
-cp .env.example .env   # set SESSION_SECRET
+cp .env.example .env   # set SESSION_SECRET (32+ chars: openssl rand -hex 32)
 docker compose up --build
 ```
 
-Open http://localhost:1324. The executor container runs `--privileged` because isolate needs namespaces and mounts; it is not published on the host.
+Open http://localhost:1324. Set `ADMIN_USER` and `ADMIN_PASSWORD` to enable `/admin` (submissions list, basic auth); serve over HTTPS and set `COOKIE_SECURE=1` in production. The executor container runs `--privileged` because isolate needs namespaces and mounts; it is not published on the host.
 
 ## Test
 
