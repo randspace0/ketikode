@@ -1,6 +1,7 @@
 let deleteButton = document.querySelector("a#delete");
 
-deleteButton.addEventListener("click", () => {
+// Only the owner gets a delete button.
+if (deleteButton) deleteButton.addEventListener("click", () => {
   if (confirm("Are you sure you want to delete this?")) {
     fetch('/code/delete', {
       method: 'DELETE',
