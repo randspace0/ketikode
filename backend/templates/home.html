@@ -18,13 +18,24 @@
             <div class="field">
               <textarea style="display: none;" name="code"></textarea>
               <div id="editor"></div>
-              <script src="https://pagecdn.io/lib/ace/1.4.6/ace.js" integrity="sha256-CVkji/u32aj2TeC+D13f7scFSIfphw2pmu4LaKWMSY8=" crossorigin="anonymous"></script>
-              <script src="https://pagecdn.io/lib/ace/1.4.6/theme-dracula.js" integrity="sha256-CHRMSxTlo+Z7Cwa3NbDjlNpAV5cWPJh9sfrj9bPlx2s=" crossorigin="anonymous"></script>
+              <script src="/static/vendor/ace.js"></script>
+              <script src="/static/vendor/theme-dracula.js"></script>
               <script>
                 let editor = ace.edit("editor");
                 let textarea = document.querySelector("textarea[name=\"code\"]");
 
-                editor.setTheme("ace/theme/twilight");
+                editor.setTheme("ace/theme/dracula");
+              ace.config.set("basePath", "/static/vendor");
+
+              // Syntax highlighting follows the selected language.
+              const modes = { c: "c_cpp", cpp: "c_cpp", python3: "python", java: "java", ruby: "ruby", rust: "rust" };
+              // The select comes later in the page, so wait for it.
+              document.addEventListener("DOMContentLoaded", () => {
+                const language = document.querySelector("select[name=\"language\"]");
+                const setMode = () => editor.session.setMode("ace/mode/" + modes[language.value]);
+                language.addEventListener("change", setMode);
+                setMode();
+              });
                 editor.getSession().on("change", function () {
                   textarea.value = editor.getSession().getValue();
                 });
