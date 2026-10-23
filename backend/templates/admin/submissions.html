@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {{ template "header" . }}
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Submissions <span class="has-text-grey is-size-5">({{ .total }})</span></h1>
+        <form method="GET" action="/admin" class="field is-grouped">
+          <div class="control">
+            <div class="select">
+              <select name="language" aria-label="Filter by language">
+                <option value="">All languages</option>
+                {{ range .languages }}
+                <option value="{{ .LanguageID }}" {{ if eq .LanguageID $.language }}selected{{ end }}>{{ .Name }}</option>
+                {{ end }}
+              </select>
+            </div>
+          </div>
+          <div class="control">
+            <button type="submit" class="button is-primary">Filter</button>
+          </div>
+        </form>
+        <table class="table is-bordered is-fullwidth">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Owner</th>
+              <th>Language</th>
+              <th>Output</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range .rows }}
+            <tr>
+              <th><a href="/{{ .ID }}">{{ .ID }}</a></th>
+              <td>{{ .Username }}</td>
+              <td>{{ .Language }}</td>
+              <td>{{ if .Stderr }}stderr{{ else if .Stdout }}stdout{{ else }}none{{ end }}</td>
+              <td>{{ .CreatedAt.Format "2006-01-02 15:04:05" }}</td>
+            </tr>
+            {{ else }}
+            <tr><td colspan="5">No submissions.</td></tr>
+            {{ end }}
+          </tbody>
+        </table>
+        <nav class="pagination" role="navigation" aria-label="pagination">
+          {{ if .pager.Prev }}<a class="pagination-previous" href="/admin?page={{ .pager.Prev }}&language={{ .language }}">Previous</a>{{ end }}
+          {{ if .pager.Next }}<a class="pagination-next" href="/admin?page={{ .pager.Next }}&language={{ .language }}">Next</a>{{ end }}
+          <p class="pagination-list">Page {{ .pager.Page }} of {{ .pager.Pages }}</p>
+        </nav>
+      </div>
+    </section>
+  </body>
+</html>
