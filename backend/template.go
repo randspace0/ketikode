@@ -38,7 +38,7 @@ func findAndParseTemplates(rootDir string, funcMap template.FuncMap) (*template.
 				return e2
 			}
 
-			name := path[pfx:]
+			name := filepath.ToSlash(path[pfx:])
 			t := root.New(name).Funcs(funcMap)
 			t, e2 = t.Parse(string(b))
 			if e2 != nil {

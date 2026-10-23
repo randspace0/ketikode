@@ -1,30 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     {{ template "header" . }}
   </head>
   <body>
     {{ template "navbar" . }}
-    <section class="section">
+    <section class="section" id="main" tabindex="-1">
       <div class="container">
-        <table class="table is-bordered is-fullwidth">
-          <thead>
-            <tr>
-              <th><abbr>#</abbr></th>
-              <th><abbr title="Language">Language</abbr></th>
-              <th><abbr title="Updated on">Updated on</abbr></th>
-            </tr>
-          </thead>
-          <tbody>
-            {{ range $code := .codes }}
-            <tr>
-              <th><a href="/{{ $code.ID }}">{{ $code.ID }}</a></th>
-              <td>{{ $code.Language }}</td>
-              <td>{{ $code.CreatedAt }}</td>
-            </tr>
-            {{ end }}
-          </tbody>
-        </table>
+        <h1 class="title is-4">My recent</h1>
+        <div class="table-container">
+          <table class="table is-fullwidth">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Language</th>
+                <th scope="col">Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{ range $code := .codes }}
+              <tr>
+                <th scope="row"><a href="/{{ $code.ID }}">{{ $code.ID }}</a></th>
+                <td>{{ $code.Language }}</td>
+                <td>{{ $code.CreatedAt.Format "2006-01-02 15:04" }}</td>
+              </tr>
+              {{ else }}
+              <tr><td colspan="3">Nothing yet. <a href="/">Run some code</a> while signed in and it shows up here.</td></tr>
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
     <!-- Begin additional javascript -->

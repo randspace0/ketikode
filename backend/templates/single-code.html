@@ -1,68 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     {{ template "header" . }}
   </head>
   <body>
-    {{ template "navbar"  . }}
-    <div class="columns">
-      <div class="column is-three-quarters">
-        <section class="section">
-            <a href="/raw/{{ .code.ID }}">RAW</a>
-            <div class="code container">
-              <pre style="border: 1px solid #ccc;">{{ .code.Code }}</pre>
-            </div>
+    {{ template "navbar" . }}
+    <section class="section" id="main" tabindex="-1">
+      <div class="container">
+        <div class="columns">
+          <div class="column is-three-quarters">
+            <h1 class="title is-4">Submission #{{ .code.ID }}</h1>
+            <h2 class="code-section-title">Source</h2>
+            <pre class="code-pre">{{ .code.Code }}</pre>
             {{ if .code.Stdin }}
-            <div class="code-input container">
-              <h2 class="is-size-3">stdin</h2>
-              <pre style="border: 1px solid #ccc;">{{ .code.Stdin }}</pre>
-            </div>
+            <h2 class="code-section-title">stdin</h2>
+            <pre class="code-pre">{{ .code.Stdin }}</pre>
             {{ end }}
             {{ if .code.Stdout }}
-            <div class="code-output container">
-              <h2 class="is-size-3">stdout</h2>
-              <pre style="border: 1px solid #ccc;">{{ .code.Stdout }}</pre>
-            </div>
+            <h2 class="code-section-title">stdout</h2>
+            <pre class="code-pre">{{ .code.Stdout }}</pre>
             {{ end }}
             {{ if .code.Stderr }}
-            <div class="code-output container">
-              <h2 class="is-size-3">stderr</h2>
-              <pre style="border: 1px solid #ccc;">{{ .code.Stderr }}</pre>
+            <h2 class="code-section-title">stderr</h2>
+            <pre class="code-pre is-error">{{ .code.Stderr }}</pre>
+            {{ end }}
+          </div>
+          <div class="column">
+            <table class="table is-fullwidth code-meta">
+              <tbody>
+                <tr>
+                  <th scope="row">Owner</th>
+                  <td>{{ .owner.Username }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Language</th>
+                  <td>{{ .code.Language }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Last update</th>
+                  <td>{{ .code.UpdatedAt.Format "2006-01-02 15:04" }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="buttons">
+              <a class="button" href="/raw/{{ .code.ID }}">Raw</a>
+              {{ if .session }}
+                {{ if eq .owner.ID (index .session "id") }}
+                <button type="button" id="delete" class="button is-danger is-outlined">Delete</button>
+                {{ end }}
+              {{ end }}
             </div>
-            {{ end }}
-        </section>
-      </div>
-      <div class="column">
-        <table class="table is-fullwidth">
-          <tbody>
-            <tr>
-              <th>Owner</a></th>
-              <td>{{ .owner.Username }}</td>
-            </tr>
-            <tr>
-              <th>Language</a></th>
-              <td>{{ .code.Language }}</td>
-            </tr>
-            <tr>
-              <th>Last Update</a></th>
-              <td>{{ .code.UpdatedAt }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div id="action" class="is-centered">
-          {{ if .session }}
-            {{ if eq .owner.ID (index .session "id") }}
-            <a href="javascript:;" id="delete">
-              <span class="icon has-text-info">
-                <i class="fas fa-trash"></i>
-              </span>
-            </a>
-            {{ end }}
-          {{ end }}
+            <div class="sharethis-inline-share-buttons"></div>
+          </div>
         </div>
-        <div class="sharethis-inline-share-buttons"></div>
       </div>
-    </div>
+    </section>
     <!-- Begin additional javascript -->
     <script>
       let code = {

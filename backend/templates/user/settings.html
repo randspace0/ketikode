@@ -1,41 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     {{ template "header" . }}
   </head>
   <body>
     {{ template "navbar" . }}
-    <section class="section">
+    <section class="section" id="main" tabindex="-1">
       <div class="columns is-mobile">
         <div class="column is-three-fifths is-offset-one-fifth">
-          <div id="notification" class="notification is-danger is-hidden">
+          <h1 class="title is-4">Change password</h1>
+          <div id="notification" class="notification is-danger is-hidden" role="alert">
           </div>
           <div id="form">
             <div class="field">
-            <label class="label">Old Password</label>
+            <label class="label" for="password-old">Old Password</label>
             <div class="control has-icons-left">
-                <input id="password-old" name="old-password" class="input" type="password" placeholder="Old Password">
+                <input id="password-old" aria-describedby="password-old-help" name="old-password" class="input" type="password" placeholder="Old Password">
                 <span class="icon is-small is-left">
                 <i class="fas fa-key"></i>
                 </span>
             </div>
-            <p class="help" id="password-old"></p>
+            <p class="help" id="password-old-help" aria-live="polite"></p>
             </div>
 
             <div class="field">
-              <label class="label">Password</label>
+              <label class="label" for="password">Password</label>
               <div class="control has-icons-left">
-                <input id="password" name="password" class="input" type="password" placeholder="Password">
+                <input id="password" aria-describedby="password-help" name="password" class="input" type="password" placeholder="Password">
                 <span class="icon is-small is-left">
                   <i class="fas fa-key"></i>
                 </span>
               </div>
-              <p class="help" id="password"></p>
+              <p class="help" id="password-help" aria-live="polite"></p>
             </div>
             
             <div class="field is-grouped">
               <div class="control">
-                <button type="submit" class="button is-primary">Edit</button>
+                <button type="submit" class="button is-primary">Change password</button>
               </div>
             </div>
           </div>

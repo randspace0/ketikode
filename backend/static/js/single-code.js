@@ -1,4 +1,4 @@
-let deleteButton = document.querySelector("a#delete");
+let deleteButton = document.querySelector("#delete");
 
 // Only the owner gets a delete button.
 if (deleteButton) deleteButton.addEventListener("click", () => {

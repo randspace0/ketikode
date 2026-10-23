@@ -1,56 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     {{ template "header" . }}
   </head>
   <body>
     {{ template "navbar" . }}
-    <section class="section">
+    <section class="section" id="main" tabindex="-1">
       <div class="container">
-        <h1 class="title">
-          Statistics by Programming Language
-        </h1>
-        <canvas id="chart"></canvas>
+        <h1 class="title is-4">Submissions by language</h1>
+        <div class="chart-box">
+          <canvas id="chart" role="img" aria-label="Bar chart of submissions per language. The same numbers are in the table below."></canvas>
+        </div>
+        <table class="table is-fullwidth stats-table">
+          <caption class="is-sr-only">Submissions per language</caption>
+          <thead>
+            <tr><th scope="col">Language</th><th scope="col" class="has-text-right">Submissions</th></tr>
+          </thead>
+          <tbody>
+            {{ range $key, $value := .languages }}
+            <tr><th scope="row">{{ $key }}</th><td class="has-text-right">{{ $value }}</td></tr>
+            {{ end }}
+          </tbody>
+        </table>
       </div>
     </section>
     <!-- Begin additional javascript -->
     <script src="/static/js/main.js"></script>
     <script src="/static/vendor/Chart.min.js"></script>
     <script>
-        function hashCode(str) { // java String#hashCode
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            return hash;
-        } 
+      const data = [
+        {{ range $key, $value := .languages }}
+        { label: "{{ $key }}", value: {{ $value }} },
+        {{ end }}
+      ];
+      // Distinguishable on a dark background, and not meaning-by-color alone: the table repeats the numbers.
+      const palette = ["#22c55e", "#38bdf8", "#f59e0b", "#a78bfa", "#f472b6", "#2dd4bf", "#fb7185", "#94a3b8"];
+      const text = "#cbd5e1";
+      const grid = "#1e293b";
 
-        function intToRGB(i){
-            let c = (i & 0x00FFFFFF)
-                .toString(16)
-                .toUpperCase();
-
-            return "00000".substring(0, 6 - c.length) + c;
-        }
-
-        let ctx = document.getElementById('chart').getContext('2d');
-        let chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ["Total"],
-                datasets: [
-                    {{ range $key, $value := .languages }}
-                    {
-                        data: [{{ $value }}],
-                        backgroundColor: "#" + intToRGB(hashCode("{{ $key }}")),
-                        borderColor: "rgba(136,136,136,0.5)",
-                        label: "{{ $key }}",
-                    },
-                    {{ end }}
-                ]
-            },
-            options: {}
-        });
+      new Chart(document.getElementById("chart").getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: data.map((d) => d.label),
+          datasets: [{
+            label: "Submissions",
+            data: data.map((d) => d.value),
+            backgroundColor: data.map((_, i) => palette[i % palette.length]),
+          }],
+        },
+        options: {
+          legend: { display: false },
+          maintainAspectRatio: false,
+          scales: {
+            xAxes: [{ ticks: { fontColor: text }, gridLines: { display: false } }],
+            yAxes: [{ ticks: { fontColor: text, beginAtZero: true, precision: 0 }, gridLines: { color: grid } }],
+          },
+          tooltips: { backgroundColor: "#0e1223", titleFontColor: "#f8fafc", bodyFontColor: text, borderColor: "#334155", borderWidth: 1 },
+        },
+      });
     </script>
   </body>
 </html>

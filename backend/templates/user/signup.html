@@ -1,58 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
   {{ template "header" . }}
   </head>
   <body>
     {{ template "navbar" . }}
-    <section class="section">
+    <section class="section" id="main" tabindex="-1">
       <div class="columns is-mobile">
         <div class="column is-three-fifths is-offset-one-fifth">
-          <div id="notification" class="notification is-danger is-hidden">
+          <h1 class="title is-4">Create an account</h1>
+          <div id="notification" class="notification is-danger is-hidden" role="alert">
           </div>
           <div id="form">
             <div class="field">
-              <label class="label">Username</label>
+              <label class="label" for="username">Username</label>
               <div class="control has-icons-left">
-                <input class="input" name ="username" id="username" type="text" placeholder="Username">
+                <input class="input" name ="username" id="username" aria-describedby="username-help" type="text" placeholder="Username">
                 <span class="icon is-small is-left">
                   <i class="fas fa-user"></i>
                 </span>
               </div>
-              <p class="help" id="username"></p>
+              <p class="help" id="username-help" aria-live="polite"></p>
             </div>
             
             <div class="field">
-              <label class="label">Email</label>
+              <label class="label" for="email">Email</label>
               <div class="control has-icons-left">
-                <input class="input" name ="email" id="email" type="email" placeholder="Email input">
+                <input class="input" name ="email" id="email" aria-describedby="email-help" type="email" placeholder="Email input">
                 <span class="icon is-small is-left">
                   <i class="fas fa-envelope"></i>
                 </span>
               </div>
-              <p class="help" id="email"></p>
+              <p class="help" id="email-help" aria-live="polite"></p>
             </div>
 
             <div class="field">
-              <label class="label">Password</label>
+              <label class="label" for="password">Password</label>
               <div class="control has-icons-left">
-                <input id="password" class="input" name="password" type="password" placeholder="Password">
+                <input id="password" aria-describedby="password-help" class="input" name="password" type="password" placeholder="Password">
                 <span class="icon is-small is-left">
                   <i class="fas fa-key"></i>
                 </span>
               </div>
-              <p class="help" id="password"></p>
+              <p class="help" id="password-help" aria-live="polite"></p>
             </div>
 
             <div class="field">
-              <label class="label">Password confirmation</label>
+              <label class="label" for="password-confirmation">Password confirmation</label>
               <div class="control has-icons-left">
-                <input id="password-confirmation" class="input" name="password-confirmation" type="password" placeholder="Password confirmation">
+                <input id="password-confirmation" aria-describedby="password-confirmation-help" class="input" name="password-confirmation" type="password" placeholder="Password confirmation">
                 <span class="icon is-small is-left">
                   <i class="fas fa-key"></i>
                 </span>
               </div>
-              <p class="help" id="password-confirmation"></p>
+              <p class="help" id="password-confirmation-help" aria-live="polite"></p>
             </div>
             
             <div class="field">
@@ -63,7 +64,7 @@
             
             <div class="field is-grouped">
               <div class="control">
-                <button type="submit" class="button is-primary">Signup</button>
+                <button type="submit" class="button is-primary">Sign up</button>
               </div>
             </div>
           </div>
