@@ -11,10 +11,11 @@ import (
 	"github.com/randspace0/ketikode/backend/repository/codes"
 )
 
+// The home page posts these as form fields; echo only matches them by tag.
 type codeForm struct {
-	Code     string
-	Stdin    string
-	Language string `validate:"required"`
+	Code     string `form:"code"`
+	Stdin    string `form:"stdin"`
+	Language string `form:"language" validate:"required"`
 }
 
 func getOutput(codesFromUser codes.Codes) codes.Codes {
