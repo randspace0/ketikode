@@ -16,8 +16,8 @@ services:
     # isolate needs to create namespaces and mounts.
     privileged: true
 
-  ketide:
-    build: ./ketide
+  backend:
+    build: ./backend
     depends_on:
       db:
         condition: service_healthy
