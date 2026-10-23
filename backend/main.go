@@ -30,6 +30,14 @@ func main() {
 
 	e := echo.New()
 
+	// Rate limits key on the client IP. Only trust forwarded headers when a
+	// reverse proxy we control sets them, otherwise clients could spoof them.
+	if os.Getenv("TRUST_PROXY_HEADERS") == "1" {
+		e.IPExtractor = echo.ExtractIPFromXFFHeader()
+	} else {
+		e.IPExtractor = echo.ExtractIPDirect()
+	}
+
 	// Logger
 	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 	// 	Format: `[${time_rfc3339}]  ${status}  ${method} ${host}${path} ${latency_human}` + "\n",

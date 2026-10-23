@@ -39,6 +39,10 @@ func fakeIsolate(args []string) int {
 		os.Stdout.WriteString(root + "\n")
 	case slicesContain(args, "--run"):
 		isCompile := strings.HasSuffix(cmd[0], "g++")
+		if f, err := os.OpenFile(filepath.Join(root, "args.log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644); err == nil {
+			f.WriteString(strings.Join(args, " ") + "\n")
+			f.Close()
+		}
 		m, out, errOut := "time:0.01\nmax-rss:100\n", "hello", ""
 		switch os.Getenv("FAKE_SCENARIO") {
 		case "compile_error":
@@ -95,6 +99,24 @@ func TestRunOK(t *testing.T) {
 	}
 	if b, _ := os.ReadFile(filepath.Join(root, "box", "stdin.txt")); string(b) != "in" {
 		t.Errorf("stdin not written to box: %q", b)
+	}
+}
+
+func TestCompileMemoryLimit(t *testing.T) {
+	compileLine := func(lang string) string {
+		_, err, root := fakeRun(t, "ok", Request{Language: lang, Code: "x", TimeSec: 1, MemoryMB: 64})
+		if err != nil {
+			t.Fatal(err)
+		}
+		log, _ := os.ReadFile(filepath.Join(root, "args.log"))
+		return strings.Split(strings.TrimSpace(string(log)), "\n")[0] // the compile run comes first
+	}
+
+	if line := compileLine("cpp"); !strings.Contains(line, "--mem=1048576") {
+		t.Errorf("g++ compile must have an address-space limit: %s", line)
+	}
+	if line := compileLine("rust"); strings.Contains(line, "--mem=") {
+		t.Errorf("rustc reserves too much address space for --mem: %s", line)
 	}
 }
 
@@ -157,6 +179,9 @@ func TestIsolateIntegration(t *testing.T) {
 
 	if r := run("python3", "print(input()[::-1])", "abc"); !r.Success || strings.TrimSpace(r.Stdout) != "cba" {
 		t.Errorf("python: %+v", r)
+	}
+	if r := run("cpp", "#include <iostream>\n#include <vector>\n#include <algorithm>\nint main(){ std::vector<int> v{3,1,2}; std::sort(v.begin(), v.end()); for (int x : v) std::cout << x; }", ""); !r.Success || r.Stdout != "123" {
+		t.Errorf("valid c++ must compile under the compile limits: %+v", r)
 	}
 	if r := run("cpp", "int main(){ not c++ }", ""); r.Phase != "compile" || r.Success || r.Stderr == "" {
 		t.Errorf("compile error: %+v", r)

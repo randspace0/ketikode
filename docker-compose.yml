@@ -30,6 +30,7 @@ services:
       EXECUTOR_URL: http://executor:8001
       SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET to 32+ characters (see .env.example)}
       COOKIE_SECURE: ${COOKIE_SECURE:-}
+      TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-}
       ADMIN_USER: ${ADMIN_USER:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     ports:
