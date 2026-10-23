@@ -4,23 +4,21 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-xorm/xorm"
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func DBConnect() *xorm.Engine {
-	dbURL := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
-	dbEngine, err := xorm.NewEngine("postgres", dbURL)
+// DB is set by Open; tests set it to an in-memory database.
+var DB *gorm.DB
 
+func Open() error {
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Database engine creation error")
+		return fmt.Errorf("open database: %w", err)
 	}
-
-	if err := dbEngine.Ping(); err != nil {
-		panic("Database ping error")
-	}
-
-	return dbEngine
+	DB = db
+	return nil
 }
-
-var DB = DBConnect()

@@ -1,87 +1,77 @@
 package codes
 
 import (
-	_ "github.com/lib/pq"
-
+	"errors"
 	"time"
 
-	"gitlab.com/cikadev/ketide/repository"
+	"gorm.io/gorm"
+
+	"github.com/randspace0/ketikode/backend/repository"
 )
 
 type Codes struct {
-	ID        uint64 `xorm:"unique pk not null autoincr"`
-	Language  string `xorm:"not null"`
-	Code      string `xorm:"not null"`
-	Stdin     string
-	Stdout    string
-	Stderr    string
-	Owner     uint64    `xorm:"not null"`
-	CreatedAt time.Time `xorm:"created"`
-	UpdatedAt time.Time `xorm:"updated"`
+	ID        uint64 `gorm:"primaryKey"`
+	Language  string `gorm:"not null"`
+	Code      string `gorm:"type:text;not null"`
+	Stdin     string `gorm:"type:text"`
+	Stdout    string `gorm:"type:text"`
+	Stderr    string `gorm:"type:text"`
+	Owner     uint64 `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (c *Codes) Create() error {
-	_, err := repository.DB.InsertOne(c)
-	if err != nil {
-		return err
-	}
-	return nil
+	return repository.DB.Create(c).Error
 }
 
+// FindByID returns nil, nil when the code does not exist.
 func (c *Codes) FindByID() (*Codes, error) {
-	codes := make([]Codes, 0)
-
-	err := repository.DB.Find(&codes, &Codes{
-		ID: c.ID,
-	})
-
-	if len(codes) == 0 {
+	var found Codes
+	err := repository.DB.First(&found, c.ID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if err != nil {
 		return nil, err
 	}
-
-	if err != nil {
-		return &codes[0], err
-	}
-
-	return &codes[0], nil
+	return &found, nil
 }
 
 func (c *Codes) FindAllOwnedCodesByUserID() ([]Codes, error) {
-	codes := []Codes{}
-
-	err := repository.DB.Find(&codes, &Codes{
-		Owner: c.Owner,
-	})
-
-	if err != nil {
-		return codes, err
-	}
-
-	return codes, nil
+	found := []Codes{}
+	err := repository.DB.Where("owner = ?", c.Owner).Order("id DESC").Find(&found).Error
+	return found, err
 }
 
 // List returns one page of submissions, newest first, optionally filtered by language.
 func List(language string, limit, offset int) ([]Codes, error) {
 	found := []Codes{}
-	session := repository.DB.Desc("i_d").Limit(limit, offset)
+	q := repository.DB.Order("id DESC").Limit(limit).Offset(offset)
 	if language != "" {
-		session = session.Where("language = ?", language)
+		q = q.Where("language = ?", language)
 	}
-	return found, session.Find(&found)
+	return found, q.Find(&found).Error
 }
 
+// Delete removes the code only if it belongs to c.Owner.
 func (c *Codes) Delete() error {
-	_, err := repository.DB.Delete(c)
-
-	return err
+	res := repository.DB.Where("id = ? AND owner = ?", c.ID, c.Owner).Delete(&Codes{})
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return errors.New("code not found")
+	}
+	return nil
 }
 
+// Total counts submissions, filtered by c.Language when set.
 func (c *Codes) Total() (int64, error) {
-	total, err := repository.DB.Count(c)
-
-	if err != nil {
-		return total, err
+	var total int64
+	q := repository.DB.Model(&Codes{})
+	if c.Language != "" {
+		q = q.Where("language = ?", c.Language)
 	}
-
-	return total, nil
+	return total, q.Count(&total).Error
 }

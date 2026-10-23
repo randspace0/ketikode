@@ -1,36 +1,55 @@
 package users
 
 import (
+	"errors"
 	"time"
 
-	"gitlab.com/cikadev/ketide/repository"
+	"gorm.io/gorm"
+
+	"github.com/randspace0/ketikode/backend/repository"
 )
 
 type Users struct {
-	ID        uint64    `xorm:"unique pk not null autoincr"`
-	Username  string    `xorm:"unique not null"`
-	Email     string    `xorm:"unique not null"`
-	Password  string    `xorm:"not null"`
-	CreatedAt time.Time `xorm:"created not null"`
-	UpdatedAt time.Time `xorm:"updated not null"`
+	ID        uint64 `gorm:"primaryKey"`
+	Username  string `gorm:"uniqueIndex;not null"`
+	Email     string `gorm:"uniqueIndex;not null"`
+	Password  string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
+// FindByID returns nil, nil when the user does not exist.
 func (u *Users) FindByID() (*Users, error) {
-	users := make([]Users, 0)
-
-	err := repository.DB.Find(&users, &Users{
-		ID: u.ID,
-	})
-
+	var found Users
+	err := repository.DB.First(&found, u.ID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
+	return &found, nil
+}
 
-	if len(users) == 0 {
+func (u *Users) Create() error {
+	return repository.DB.Create(u).Error
+}
+
+// GetUserByUsernamePassword returns nil, nil when nothing matches.
+func (u *Users) GetUserByUsernamePassword() (*Users, error) {
+	var found Users
+	err := repository.DB.Where("username = ? AND password = ?", u.Username, u.Password).First(&found).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if err != nil {
 		return nil, err
 	}
+	return &found, nil
+}
 
-	return &users[0], nil
+func (u *Users) UpdateWhereID(id uint64) error {
+	return repository.DB.Model(&Users{}).Where("id = ?", id).Updates(Users{Password: u.Password}).Error
 }
 
 // UsernamesByID maps user IDs to usernames in a single query.
@@ -40,44 +59,12 @@ func UsernamesByID(ids []uint64) (map[uint64]string, error) {
 		return names, nil
 	}
 
-	found := []Users{}
-	if err := repository.DB.In("i_d", ids).Find(&found); err != nil {
+	var found []Users
+	if err := repository.DB.Where("id IN ?", ids).Find(&found).Error; err != nil {
 		return nil, err
 	}
 	for _, u := range found {
 		names[u.ID] = u.Username
 	}
 	return names, nil
-}
-
-func (u *Users) Create() error {
-	_, err := repository.DB.InsertOne(u)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (u *Users) GetUserByUsernamePassword() (*Users, error) {
-	users := make([]Users, 0)
-
-	err := repository.DB.Find(&users, &Users{
-		Username: u.Username,
-		Password: u.Password,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(users) == 0 {
-		return nil, err
-	}
-
-	return &users[0], nil
-}
-
-func (u *Users) UpdateWhereID(id uint64) error {
-	_, err := repository.DB.Id(id).Update(u)
-	return err
 }

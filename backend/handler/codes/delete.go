@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"gitlab.com/cikadev/ketide/handler"
+	"github.com/randspace0/ketikode/backend/handler"
 
 	"github.com/labstack/echo/v4"
 
-	"gitlab.com/cikadev/ketide/repository/codes"
+	"github.com/randspace0/ketikode/backend/repository/codes"
 )
 
 type deleteForm struct {

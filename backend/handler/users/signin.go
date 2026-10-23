@@ -5,8 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"gitlab.com/cikadev/ketide/handler"
-	"gitlab.com/cikadev/ketide/repository/users"
+	"github.com/randspace0/ketikode/backend/handler"
+	"github.com/randspace0/ketikode/backend/repository/users"
 )
 
 func SigninHandler(c echo.Context) error {

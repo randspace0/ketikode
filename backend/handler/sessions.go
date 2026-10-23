@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"gitlab.com/cikadev/ketide/repository/users"
+	"github.com/randspace0/ketikode/backend/repository/users"
 )
 
 // TODO refactor session part

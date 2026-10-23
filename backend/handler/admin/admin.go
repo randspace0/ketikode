@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"gitlab.com/cikadev/ketide/handler/adminutil"
-	"gitlab.com/cikadev/ketide/repository/codes"
-	"gitlab.com/cikadev/ketide/repository/programminglang"
-	"gitlab.com/cikadev/ketide/repository/users"
+	"github.com/randspace0/ketikode/backend/handler/adminutil"
+	"github.com/randspace0/ketikode/backend/repository/codes"
+	"github.com/randspace0/ketikode/backend/repository/programminglang"
+	"github.com/randspace0/ketikode/backend/repository/users"
 )
 
 type row struct {

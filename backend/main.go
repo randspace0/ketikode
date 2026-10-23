@@ -2,26 +2,30 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"os"
 
 	"github.com/labstack/echo/v4"
 
 	"github.com/labstack/echo-contrib/session"
 
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/gorilla/sessions"
 
-	_ "github.com/lib/pq"
-
-	"gitlab.com/cikadev/ketide/handler"
-	"gitlab.com/cikadev/ketide/repository"
+	"github.com/randspace0/ketikode/backend/handler"
+	"github.com/randspace0/ketikode/backend/repository"
+	"github.com/randspace0/ketikode/backend/repository/migrate"
 )
 
 func main() {
 	// Database
-	MigrateTable(repository.DB)
-	MigrateLanguage(repository.DB)
+	if err := repository.Open(); err != nil {
+		log.Fatal(err)
+	}
+	if err := migrate.Run(repository.DB); err != nil {
+		log.Fatalf("migrate: %v", err)
+	}
 
 	e := echo.New()
 

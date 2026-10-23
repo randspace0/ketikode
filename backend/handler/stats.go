@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"gitlab.com/cikadev/ketide/repository/codes"
-	"gitlab.com/cikadev/ketide/repository/programminglang"
+	"github.com/randspace0/ketikode/backend/repository/codes"
+	"github.com/randspace0/ketikode/backend/repository/programminglang"
 )
 
 func StatsHandler(c echo.Context) error {

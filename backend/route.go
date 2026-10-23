@@ -5,11 +5,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"gitlab.com/cikadev/ketide/handler"
-	"gitlab.com/cikadev/ketide/handler/admin"
-	"gitlab.com/cikadev/ketide/handler/adminutil"
-	"gitlab.com/cikadev/ketide/handler/codes"
-	"gitlab.com/cikadev/ketide/handler/users"
+	"github.com/randspace0/ketikode/backend/handler"
+	"github.com/randspace0/ketikode/backend/handler/admin"
+	"github.com/randspace0/ketikode/backend/handler/adminutil"
+	"github.com/randspace0/ketikode/backend/handler/codes"
+	"github.com/randspace0/ketikode/backend/handler/users"
 )
 
 func route(e *echo.Echo) {
