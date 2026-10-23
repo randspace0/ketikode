@@ -29,17 +29,18 @@ func route(e *echo.Echo) {
 	e.POST("/settings", handler.RequiresSignin(users.SettingsProcessHandler))
 
 	e.GET("/signin", handler.RequiresSignout(users.SigninHandler))
-	e.POST("/signin", handler.RequiresSignout(users.SigninProcessHandler))
+	e.POST("/signin", handler.RequiresSignout(users.SigninProcessHandler), handler.RateLimit(0.2, 5))
 
 	e.GET("/signup", handler.RequiresSignout(users.SignupHandler))
-	e.POST("/signup", handler.RequiresSignout(users.SignupProcessHandler))
+	e.POST("/signup", handler.RequiresSignout(users.SignupProcessHandler), handler.RateLimit(0.2, 5))
 
 	e.GET("/signout", handler.RequiresSignin(func(c echo.Context) error {
 		handler.Signout(c)
 		return c.Redirect(http.StatusTemporaryRedirect, "/signin")
 	}))
 
-	e.POST("/code/create", codes.Create)
+	// Each run holds an executor sandbox for up to several seconds.
+	e.POST("/code/create", codes.Create, handler.RateLimit(0.5, 10))
 	e.DELETE("/code/delete", handler.RequiresSignin(codes.Delete))
 
 	if user, password, ok := adminutil.Credentials(); ok {

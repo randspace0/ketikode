@@ -120,7 +120,7 @@ func (s *Isolate) Run(ctx context.Context, req Request) (*Response, error) {
 	}
 
 	if lang.Compile != nil {
-		res, err := s.step(ctx, box, dir, limits{timeSec: 15, memMB: 1024, procs: 64, fsizeKB: 256 << 10}, "", lang.Compile)
+		res, err := s.step(ctx, box, dir, limits{timeSec: 15, memMB: 1024, procs: 64, fsizeKB: 256 << 10, asLimit: lang.CompileAS}, "", lang.Compile)
 		if err != nil {
 			return nil, err
 		}
