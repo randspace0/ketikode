@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
 	"github.com/randspace0/ketikode/backend/repository"
@@ -35,10 +36,19 @@ func (u *Users) Create() error {
 	return repository.DB.Create(u).Error
 }
 
-// GetUserByUsernamePassword returns nil, nil when nothing matches.
-func (u *Users) GetUserByUsernamePassword() (*Users, error) {
+// MaxPasswordLength is bcrypt's input limit; longer passwords are silently truncated.
+const MaxPasswordLength = 72
+
+// HashPassword returns the bcrypt hash to store in Users.Password.
+func HashPassword(plain string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(plain), bcrypt.DefaultCost)
+	return string(hash), err
+}
+
+// FindByUsername returns nil, nil when the user does not exist.
+func FindByUsername(username string) (*Users, error) {
 	var found Users
-	err := repository.DB.Where("username = ? AND password = ?", u.Username, u.Password).First(&found).Error
+	err := repository.DB.Where("username = ?", username).First(&found).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -48,8 +58,13 @@ func (u *Users) GetUserByUsernamePassword() (*Users, error) {
 	return &found, nil
 }
 
-func (u *Users) UpdateWhereID(id uint64) error {
-	return repository.DB.Model(&Users{}).Where("id = ?", id).Updates(Users{Password: u.Password}).Error
+func (u *Users) CheckPassword(plain string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plain)) == nil
+}
+
+// UpdatePassword stores an already hashed password.
+func UpdatePassword(id uint64, hash string) error {
+	return repository.DB.Model(&Users{}).Where("id = ?", id).Update("password", hash).Error
 }
 
 // UsernamesByID maps user IDs to usernames in a single query.

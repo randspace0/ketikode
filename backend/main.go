@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -35,7 +36,7 @@ func main() {
 	// }))
 
 	// Session
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(sessionSecret()))))
+	e.Use(session.Middleware(newSessionStore()))
 
 	e.Validator = &handler.CustomValidator{Validator: validator.New()}
 
@@ -54,9 +55,23 @@ func main() {
 	e.Logger.Debug(e.Start(":1324"))
 }
 
-func sessionSecret() string {
-	if s := os.Getenv("SESSION_SECRET"); s != "" {
-		return s
+const minSessionSecretLength = 32
+
+// newSessionStore refuses to start with a weak secret, because the cookie only
+// holds the user id and is trusted if its signature checks out.
+func newSessionStore() *sessions.CookieStore {
+	secret := os.Getenv("SESSION_SECRET")
+	if len(secret) < minSessionSecretLength {
+		log.Fatalf("SESSION_SECRET must be set to at least %d characters (try: openssl rand -hex 32)", minSessionSecretLength)
 	}
-	return "secret"
+
+	store := sessions.NewCookieStore([]byte(secret))
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   7 * 24 * 60 * 60,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   os.Getenv("COOKIE_SECURE") == "1",
+	}
+	return store
 }

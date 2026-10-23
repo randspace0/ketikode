@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -19,66 +18,37 @@ func SettingsHandler(c echo.Context) error {
 
 type settingsForm struct {
 	PasswordOld string `json:"passwordOld" validate:"required"`
-	Password    string `json:"password" validate:"required,nefield=PasswordOld"`
+	Password    string `json:"password" validate:"required,min=8,max=72,nefield=PasswordOld"`
 }
 
 func SettingsProcessHandler(c echo.Context) error {
-	data := handler.AppendSessionData(c, map[string]interface{}{})
-
 	sf := new(settingsForm)
-
 	if err := c.Bind(sf); err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
+		return handler.JSONError(c, http.StatusBadRequest, "Invalid request", err)
 	}
 
 	if err := c.Validate(sf); err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
+		return handler.JSONError(c, http.StatusBadRequest, "The new password must be 8 to 72 characters and differ from the old one", nil)
 	}
 
-	sessData := data["session"].(map[interface{}]interface{})
-
-	u := &users.Users{
-		Username: sessData["username"].(string),
-		Password: sf.PasswordOld,
+	// RequiresSignin has already checked the session user exists.
+	id := handler.GetSessionData(c)["id"].(uint64)
+	user, err := (&users.Users{ID: id}).FindByID()
+	if err != nil || user == nil {
+		return handler.JSONError(c, http.StatusInternalServerError, "Could not change the password", err)
 	}
 
-	fmt.Println(u)
+	if !user.CheckPassword(sf.PasswordOld) {
+		return handler.JSONError(c, http.StatusUnauthorized, "Wrong password", nil)
+	}
 
-	user, err := u.GetUserByUsernamePassword()
-
+	hash, err := users.HashPassword(sf.Password)
 	if err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
+		return handler.JSONError(c, http.StatusInternalServerError, "Could not change the password", err)
+	}
+	if err := users.UpdatePassword(id, hash); err != nil {
+		return handler.JSONError(c, http.StatusInternalServerError, "Could not change the password", err)
 	}
 
-	if user == nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": "Wrong username or password",
-			"success": false,
-		})
-	}
-
-	userToBeChanged := users.Users{
-		Password: sf.Password,
-	}
-
-	if err := userToBeChanged.UpdateWhereID(sessData["id"].(uint64)); err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"message": err.Error(),
-			"success": false,
-		})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "",
-		"success": true,
-	})
+	return handler.JSONOK(c)
 }

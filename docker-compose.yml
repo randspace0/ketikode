@@ -28,7 +28,10 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-ketide}
       DB_NAME: ketide
       EXECUTOR_URL: http://executor:8001
-      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET (see .env.example)}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET to 32+ characters (see .env.example)}
+      COOKIE_SECURE: ${COOKIE_SECURE:-}
+      ADMIN_USER: ${ADMIN_USER:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     ports:
       - "1324:1324"
 
