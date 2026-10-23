@@ -4,9 +4,9 @@ Online code editor and runner. Monorepo:
 
 | Dir | |
 |---|---|
-| `ketide/` | Web app (Go, Echo, Postgres) |
+| `backend/` | Web app (Go, Echo, Postgres) |
 | `executor/` | Sandboxed compile/run service (Go, [isolate](https://github.com/ioi/isolate)) |
-| `ketikode/` | Early UI prototype |
+| `frontend/` | Early UI prototype |
 
 ## Run
 
@@ -20,7 +20,7 @@ Open http://localhost:1324. The executor container runs `--privileged` because i
 ## Test
 
 ```
-(cd ketide && go test ./...)
+(cd backend && go test ./...)
 (cd executor && go test ./...)
 docker build --target integration -t executor-integration executor && docker run --rm --privileged executor-integration
 ```
