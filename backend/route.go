@@ -6,6 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"gitlab.com/cikadev/ketide/handler"
+	"gitlab.com/cikadev/ketide/handler/admin"
+	"gitlab.com/cikadev/ketide/handler/adminutil"
 	"gitlab.com/cikadev/ketide/handler/codes"
 	"gitlab.com/cikadev/ketide/handler/users"
 )
@@ -39,6 +41,10 @@ func route(e *echo.Echo) {
 
 	e.POST("/code/create", codes.Create)
 	e.DELETE("/code/delete", handler.RequiresSignin(codes.Delete))
+
+	if user, password, ok := adminutil.Credentials(); ok {
+		e.GET("/admin", admin.Submissions, adminutil.Auth(user, password))
+	}
 
 	e.GET("/:id", codes.Get)
 	e.GET("/raw/:id", codes.GetRAW)

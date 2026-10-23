@@ -33,6 +33,23 @@ func (u *Users) FindByID() (*Users, error) {
 	return &users[0], nil
 }
 
+// UsernamesByID maps user IDs to usernames in a single query.
+func UsernamesByID(ids []uint64) (map[uint64]string, error) {
+	names := map[uint64]string{}
+	if len(ids) == 0 {
+		return names, nil
+	}
+
+	found := []Users{}
+	if err := repository.DB.In("i_d", ids).Find(&found); err != nil {
+		return nil, err
+	}
+	for _, u := range found {
+		names[u.ID] = u.Username
+	}
+	return names, nil
+}
+
 func (u *Users) Create() error {
 	_, err := repository.DB.InsertOne(u)
 	if err != nil {

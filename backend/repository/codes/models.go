@@ -60,6 +60,16 @@ func (c *Codes) FindAllOwnedCodesByUserID() ([]Codes, error) {
 	return codes, nil
 }
 
+// List returns one page of submissions, newest first, optionally filtered by language.
+func List(language string, limit, offset int) ([]Codes, error) {
+	found := []Codes{}
+	session := repository.DB.Desc("i_d").Limit(limit, offset)
+	if language != "" {
+		session = session.Where("language = ?", language)
+	}
+	return found, session.Find(&found)
+}
+
 func (c *Codes) Delete() error {
 	_, err := repository.DB.Delete(c)
 
